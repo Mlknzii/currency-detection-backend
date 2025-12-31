@@ -4,60 +4,46 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from dotenv import load_dotenv
 import os
 
-# Load .env ONLY for local development
+# Load .env for local development only
 load_dotenv()
 
+# Base for declarative models
 Base = declarative_base()
 
-_engine = None
-AsyncSessionLocal = None
+# Get DATABASE_URL from environment
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set. "
+        "Check your Railway environment variables."
+    )
 
+# Automatically create async engine on import
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    future=True,
+)
 
-def get_database_url() -> str:
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        raise RuntimeError(
-            "DATABASE_URL is not set. "
-            "Check Render/Railway environment variables."
-        )
-    return db_url
+# Create sessionmaker for dependency injection
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
-
-def init_engine():
-    global _engine, AsyncSessionLocal
-
-    if _engine is None:
-        _engine = create_async_engine(
-            get_database_url(),
-            echo=True,
-            future=True,
-        )
-
-        AsyncSessionLocal = sessionmaker(
-            bind=_engine,
-            class_=AsyncSession,
-            expire_on_commit=False,
-        )
-
-    return _engine
-
-
-# ✅ Dependency for FastAPI routes
+# Dependency for FastAPI routes
 async def get_db():
-    if AsyncSessionLocal is None:
-        raise RuntimeError("Database not initialized. Call init_engine() first.")
-
     async with AsyncSessionLocal() as session:
         yield session
 
-
-# ✅ Safe async connection test
+# Optional: test connection
 async def test_connection():
-    engine = init_engine()
     try:
         async with engine.connect() as connection:
             await connection.execute("SELECT 1")
             print("✅ Database connection successful!")
     except SQLAlchemyError as e:
         print("❌ Database connection failed:", e)
+
 
