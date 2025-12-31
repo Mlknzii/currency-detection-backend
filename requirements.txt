@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pydantic-settings
+sqlmodel
+asyncpg
+aioboto3         # or boto3 for sync S3
+python-jose[cryptography]
+pillow
+google-generativeai
+psycopg2-binary
+python-dotenv
+alembic
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.2
