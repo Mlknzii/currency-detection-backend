@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
 python-multipart
-pydantic
+pydantic[email]
 pydantic-settings
 sqlmodel
 asyncpg
