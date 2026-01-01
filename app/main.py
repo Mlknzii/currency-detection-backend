@@ -27,12 +27,12 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 # Allow frontend connection
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # later replace with your Next.js URL
+    allow_origins=["https://currency-detection-ui-v16.vercel.app"],  # later replace with your Next.js URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+# https://currency-detection-ui-v16.vercel.app/
 
 @app.on_event("startup")
 async def startup_event():
