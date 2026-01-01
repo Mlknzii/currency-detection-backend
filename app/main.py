@@ -50,3 +50,12 @@ def home():
 # Authentication and Prediction Routers
 app.include_router(auth_router)
 app.include_router(predict_router)
+
+# for Render
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+    )
